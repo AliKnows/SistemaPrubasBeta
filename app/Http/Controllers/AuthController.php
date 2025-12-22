@@ -40,7 +40,8 @@ class AuthController extends Controller
     // Logout: Elimina el token
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        //corregir sobre el metodo de delete()
+      //  $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Sesión cerrada exitosamente']);
     }
 }
