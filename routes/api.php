@@ -10,8 +10,8 @@ use App\Http\Controllers\ClientController; // <--- Importamos el controlador aqu
 | RUTAS PÚBLICAS (Sin Token)
 |--------------------------------------------------------------------------
 */
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
 /*
 |--------------------------------------------------------------------------
 | RUTAS PROTEGIDAS (Requieren Token Bearer)
@@ -27,9 +27,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 
-
     // --- Gestión de Clientes (CRUD Completo) ---
     //xpande esa única línea en múltiples endpoints
     // Esta sola línea crea 5 rutas: GET(index), POST(store), GET(show), PUT(update), DELETE(destroy)
     Route::apiResource('/clients', ClientController::class);
+
+
+
+
 });

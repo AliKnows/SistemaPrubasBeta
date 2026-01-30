@@ -9,7 +9,36 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    // Login: Recibe email/pass y devuelve un Token
+    
+    public function register(Request $request)
+    {
+        // Validación de datos de entrada
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed', // Requiere password_confirmation
+        ]);
+
+        // Crear el usuario con contraseña encriptada
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Generar token de autenticación automáticamente
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Respuesta con datos del usuario y token
+        return response()->json([
+            'message' => 'Usuario registrado exitosamente',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user
+        ], 201); // Código 201: Created
+    }
+
+    
     public function login(Request $request)
     {
         $request->validate([
@@ -37,11 +66,13 @@ class AuthController extends Controller
         ]);
     }
 
-    // Logout: Elimina el token
+    
     public function logout(Request $request)
     {
-        //corregir sobre el metodo de delete()
-      //  $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Sesión cerrada exitosamente']);
+        // Eliminar el token actual del usuario autenticado
+       // $request->user()->currentAccessToken()->delete(); 
+        return response()->json([
+            'message' => 'Sesión cerrada exitosamente'
+        ]);
     }
 }
