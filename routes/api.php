@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ProductsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,13 +32,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     /**---------------------------
-     * --- Gestión de Clientes ---
+     * --- Recursos API ---
      -----------------------------*/
-    Route::get('/clients-index', [ClientController::class, 'index']);              // Listar todos los clientes
-    Route::post('/clients-create', [ClientController::class, 'store']);             // Crear nuevo cliente
-    Route::get('/clients/{id}', [ClientController::class, 'show']);          // Ver cliente específico
-    Route::put('/clients/{id}', [ClientController::class, 'update']);        // Actualizar cliente (completo)
-    Route::patch('/clients/{id}', [ClientController::class, 'update']);      // Actualizar cliente (parcial)
-    Route::delete('/clients/{id}', [ClientController::class, 'destroy']);
+    Route::apiResource('clients', ClientController::class);
+    Route::apiResource('products', ProductsController::class);
 
 });

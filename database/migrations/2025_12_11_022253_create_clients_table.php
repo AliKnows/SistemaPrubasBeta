@@ -16,12 +16,12 @@ return new class extends Migration
             $table->timestamps();
             $table->string("nombre");
             $table->string("apellido_paterno");
-            $table->string("apellido_materno");
+            $table->string("apellido_materno")->nullable();
             $table->string("documento")->unique();
-            $table->string("numero_telefonico")->unique();
-            $table->string("correo_electronico")->nullable();
-            $table->string("direccion");
-            $table->date("fecha_nacimiento");        
+            $table->string("numero_telefonico")->unique()->nullable();
+            $table->string("correo_electronico")->unique();
+            $table->string("direccion")->nullable();
+            $table->date("fecha_nacimiento")->nullable();        
         
         });
     }
