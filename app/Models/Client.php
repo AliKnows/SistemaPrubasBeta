@@ -19,4 +19,9 @@ class Client extends Model
         'direccion',
         'fecha_nacimiento',
     ];
+
+    public function sales(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Sale::class);
+    }
 }

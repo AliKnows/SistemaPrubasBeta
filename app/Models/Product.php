@@ -15,4 +15,9 @@ class Product extends Model
         'precio',
         'stock',
     ];
+
+    public function saleItems(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SaleItem::class);
+    }
 }

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\SaleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,5 +37,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
      -----------------------------*/
     Route::apiResource('clients', ClientController::class);
     Route::apiResource('products', ProductsController::class);
+    Route::apiResource('sales', SaleController::class)->only(['index', 'store', 'show', 'destroy']);
+
+    //NOTA: Verificar las rutas del CRUD que crea, modifica, elimina, agrega, lista los clientes
 
 });
