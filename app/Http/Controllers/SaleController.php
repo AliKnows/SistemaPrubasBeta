@@ -17,7 +17,7 @@ class SaleController extends Controller
      */
     public function index()
     {
-        $sales = Sale::with(['user:id,name', 'client:id,nombre,apellido_paterno', 'items.product:id,nombre'])
+        $sales = Sale::with(['user:id,name', 'client:id,first_name,last_name', 'items.product:id,name'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -34,6 +34,11 @@ class SaleController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'client_id' => 'required|exists:clients,id',
+            'payment_method_id' => 'nullable|exists:payment_methods,id',
+            'sale_status_id' => 'nullable|exists:sale_statuses,id',
+            'description' => 'nullable|string|max:1000',
+            'tax_rate' => 'nullable|numeric|min:0', // Optional tax rate (e.g., 0.18 for 18%)
+            'discount_amount' => 'nullable|numeric|min:0',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
@@ -48,7 +53,7 @@ class SaleController extends Controller
 
         try {
             return DB::transaction(function () use ($request) {
-                $totalAmount = 0;
+                $subtotal = 0;
                 $saleItemsData = [];
 
                 foreach ($request->items as $item) {
@@ -56,27 +61,38 @@ class SaleController extends Controller
 
                     // Validar Stock
                     if ($product->stock < $item['quantity']) {
-                        throw new \Exception("Stock insuficiente para el producto: {$product->nombre}");
+                        throw new \Exception("Stock insuficiente para el producto: {$product->name}");
                     }
 
-                    $subtotal = $product->precio * $item['quantity'];
-                    $totalAmount += $subtotal;
+                    $itemSubtotal = $product->price * $item['quantity'];
+                    $subtotal += $itemSubtotal;
 
                     $saleItemsData[] = [
                         'product_id' => $product->id,
                         'quantity' => $item['quantity'],
-                        'unit_price' => $product->precio,
-                        'subtotal' => $subtotal,
+                        'unit_price' => $product->price,
+                        'subtotal' => $itemSubtotal,
                     ];
 
                     // Descontar stock
                     $product->decrement('stock', $item['quantity']);
                 }
 
+                $taxRate = $request->input('tax_rate', 0);
+                $taxAmount = $subtotal * $taxRate;
+                $discountAmount = $request->input('discount_amount', 0);
+                $totalAmount = $subtotal + $taxAmount - $discountAmount;
+
                 // Crear la Venta (Encabezado)
                 $sale = Sale::create([
                     'user_id' => Auth::id(), // Trazabilidad del colaborador autenticado
                     'client_id' => $request->client_id,
+                    'payment_method_id' => $request->payment_method_id,
+                    'sale_status_id' => $request->sale_status_id,
+                    'description' => $request->description,
+                    'subtotal' => $subtotal,
+                    'tax_amount' => $taxAmount,
+                    'discount_amount' => $discountAmount,
                     'total_amount' => $totalAmount,
                 ]);
 
@@ -89,7 +105,7 @@ class SaleController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Venta registrada exitosamente',
-                    'data' => $sale->load('items')
+                    'data' => $sale->load(['items.product', 'user:id,name', 'client:id,first_name,last_name'])
                 ], 201);
             });
 

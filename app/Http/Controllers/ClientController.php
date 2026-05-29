@@ -37,25 +37,25 @@ class ClientController extends Controller
         try {
             // Validación de datos
             $validator = Validator::make($request->all(), [
-                'nombre' => 'required|string|max:255',
-                'apellido_paterno' => 'required|string|max:255',
-                'apellido_materno' => 'nullable|string|max:255',
-                'documento' => 'required|string|max:20|unique:clients,documento',
-                'numero_telefonico' => 'nullable|string|max:20',
-                'correo_electronico' => 'required|email|max:255|unique:clients,correo_electronico',
-                'direccion' => 'nullable|string|max:500',
-                'fecha_nacimiento' => 'nullable|date|before:today',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'second_last_name' => 'nullable|string|max:255',
+                'document_number' => 'required|string|max:20|unique:clients,document_number',
+                'phone_number' => 'nullable|string|max:20',
+                'email' => 'required|email|max:255|unique:clients,email',
+                'address' => 'nullable|string|max:500',
+                'birth_date' => 'nullable|date|before:today',
             ], [
                 // Mensajes personalizados en español
-                'nombre.required' => 'El nombre es obligatorio',
-                'apellido_paterno.required' => 'El apellido paterno es obligatorio',
-                'documento.required' => 'El documento es obligatorio',
-                'documento.unique' => 'Este documento ya está registrado',
-                'correo_electronico.required' => 'El correo electrónico es obligatorio',
-                'correo_electronico.email' => 'El correo electrónico debe ser válido',
-                'correo_electronico.unique' => 'Este correo electrónico ya está registrado',
-                'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha válida',
-                'fecha_nacimiento.before' => 'La fecha de nacimiento debe ser anterior a hoy',
+                'first_name.required' => 'El nombre es obligatorio',
+                'last_name.required' => 'El apellido paterno es obligatorio',
+                'document_number.required' => 'El documento es obligatorio',
+                'document_number.unique' => 'Este documento ya está registrado',
+                'email.required' => 'El correo electrónico es obligatorio',
+                'email.email' => 'El correo electrónico debe ser válido',
+                'email.unique' => 'Este correo electrónico ya está registrado',
+                'birth_date.date' => 'La fecha de nacimiento debe ser una fecha válida',
+                'birth_date.before' => 'La fecha de nacimiento debe ser anterior a hoy',
             ]);
 
             if ($validator->fails()) {
@@ -124,25 +124,25 @@ class ClientController extends Controller
 
             // Validación de datos
             $validator = Validator::make($request->all(), [
-                'nombre' => 'sometimes|required|string|max:255',
-                'apellido_paterno' => 'sometimes|required|string|max:255',
-                'apellido_materno' => 'nullable|string|max:255',
-                'documento' => 'sometimes|required|string|max:20|unique:clients,documento,' . $id,
-                'numero_telefonico' => 'nullable|string|max:20',
-                'correo_electronico' => 'sometimes|required|email|max:255|unique:clients,correo_electronico,' . $id,
-                'direccion' => 'nullable|string|max:500',
-                'fecha_nacimiento' => 'nullable|date|before:today',
+                'first_name' => 'sometimes|required|string|max:255',
+                'last_name' => 'sometimes|required|string|max:255',
+                'second_last_name' => 'nullable|string|max:255',
+                'document_number' => 'sometimes|required|string|max:20|unique:clients,document_number,' . $id,
+                'phone_number' => 'nullable|string|max:20',
+                'email' => 'sometimes|required|email|max:255|unique:clients,email,' . $id,
+                'address' => 'nullable|string|max:500',
+                'birth_date' => 'nullable|date|before:today',
             ], [
                 // Mensajes personalizados en español
-                'nombre.required' => 'El nombre es obligatorio',
-                'apellido_paterno.required' => 'El apellido paterno es obligatorio',
-                'documento.required' => 'El documento es obligatorio',
-                'documento.unique' => 'Este documento ya está registrado',
-                'correo_electronico.required' => 'El correo electrónico es obligatorio',
-                'correo_electronico.email' => 'El correo electrónico debe ser válido',
-                'correo_electronico.unique' => 'Este correo electrónico ya está registrado',
-                'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha válida',
-                'fecha_nacimiento.before' => 'La fecha de nacimiento debe ser anterior a hoy',
+                'first_name.required' => 'El nombre es obligatorio',
+                'last_name.required' => 'El apellido paterno es obligatorio',
+                'document_number.required' => 'El documento es obligatorio',
+                'document_number.unique' => 'Este documento ya está registrado',
+                'email.required' => 'El correo electrónico es obligatorio',
+                'email.email' => 'El correo electrónico debe ser válido',
+                'email.unique' => 'Este correo electrónico ya está registrado',
+                'birth_date.date' => 'La fecha de nacimiento debe ser una fecha válida',
+                'birth_date.before' => 'La fecha de nacimiento debe ser anterior a hoy',
             ]);
 
             if ($validator->fails()) {

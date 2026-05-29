@@ -37,14 +37,15 @@ class ProductsController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'nombre' => 'required|string|max:255',
-                'descripcion' => 'nullable|string',
-                'precio' => 'required|numeric|min:0',
+                'category_id' => 'nullable|exists:categories,id',
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'price' => 'required|numeric|min:0',
                 'stock' => 'required|integer|min:0',
             ], [
-                'nombre.required' => 'El nombre es obligatorio',
-                'precio.required' => 'El precio es obligatorio',
-                'precio.numeric' => 'El precio debe ser un número',
+                'name.required' => 'El nombre es obligatorio',
+                'price.required' => 'El precio es obligatorio',
+                'price.numeric' => 'El precio debe ser un número',
                 'stock.required' => 'El stock es obligatorio',
                 'stock.integer' => 'El stock debe ser un número entero',
             ]);
@@ -109,9 +110,10 @@ class ProductsController extends Controller
             $product = Product::findOrFail($id);
 
             $validator = Validator::make($request->all(), [
-                'nombre' => 'sometimes|required|string|max:255',
-                'descripcion' => 'nullable|string',
-                'precio' => 'sometimes|required|numeric|min:0',
+                'category_id' => 'nullable|exists:categories,id',
+                'name' => 'sometimes|required|string|max:255',
+                'description' => 'nullable|string',
+                'price' => 'sometimes|required|numeric|min:0',
                 'stock' => 'sometimes|required|integer|min:0',
             ]);
 

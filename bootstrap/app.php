@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->statefulApi(); // Habilita el manejo de estado para APIs (Sanctum)
+        // Dejamos que Sanctum maneje la autenticación de forma estándar
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
