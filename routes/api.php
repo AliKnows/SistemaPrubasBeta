@@ -6,6 +6,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\InventoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,8 +15,10 @@ use App\Http\Controllers\SaleController;
 |--------------------------------------------------------------------------
 */
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::middleware(['throttle:auth'])->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+});
 
 // RUTA DE DIAGNÓSTICO
 Route::get('/debug-token', function (Request $request) {
@@ -45,7 +49,7 @@ Route::get('/debug-token', function (Request $request) {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     
     /**---------------------------
      * --- Gestión de Sesión ---

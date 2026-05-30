@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\User;
@@ -17,7 +18,11 @@ class TestingDataSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Crear Vendedor de Prueba
+        // 1. Crear Categorías
+        $catElectronics = Category::firstOrCreate(['name' => 'Electrónica'], ['description' => 'Dispositivos y gadgets electrónicos']);
+        $catPeripherals = Category::firstOrCreate(['name' => 'Periféricos'], ['description' => 'Accesorios para computadoras']);
+
+        // 2. Crear Vendedor de Prueba
         User::updateOrCreate(
             ['email' => 'vendedor@test.com'],
             [
@@ -26,17 +31,17 @@ class TestingDataSeeder extends Seeder
             ]
         );
 
-        // 2. Crear Métodos de Pago
+        // 3. Crear Métodos de Pago
         PaymentMethod::firstOrCreate(['code' => 'cash'], ['name' => 'Efectivo']);
         PaymentMethod::firstOrCreate(['code' => 'credit_card'], ['name' => 'Tarjeta de Crédito']);
         PaymentMethod::firstOrCreate(['code' => 'transfer'], ['name' => 'Transferencia Bancaria']);
 
-        // 3. Crear Estados de Venta
+        // 4. Crear Estados de Venta
         SaleStatus::firstOrCreate(['name' => 'Pendiente'], ['color_hex' => '#FFA500']);
         SaleStatus::firstOrCreate(['name' => 'Pagada'], ['color_hex' => '#008000']);
         SaleStatus::firstOrCreate(['name' => 'Anulada'], ['color_hex' => '#FF0000']);
 
-        // 4. Crear Cliente de Prueba
+        // 5. Crear Cliente de Prueba
         Client::updateOrCreate(
             ['email' => 'juan.perez@test.com'],
             [
@@ -50,37 +55,42 @@ class TestingDataSeeder extends Seeder
             ]
         );
 
-        // 5. Crear Lista de Productos de Prueba
+        // 6. Crear Lista de Productos de Prueba
         $products = [
             [
                 'name' => 'Laptop Gamer Pro',
                 'description' => 'Procesador i9, 32GB RAM, 1TB SSD',
                 'price' => 1500.00,
                 'stock' => 15,
+                'category_id' => $catElectronics->id,
             ],
             [
                 'name' => 'Mouse Ergonómico Inalámbrico',
                 'description' => 'Sensor óptico de alta precisión',
                 'price' => 45.50,
                 'stock' => 50,
+                'category_id' => $catPeripherals->id,
             ],
             [
                 'name' => 'Teclado Mecánico RGB',
                 'description' => 'Switches Blue, retroiluminado',
                 'price' => 89.90,
                 'stock' => 30,
+                'category_id' => $catPeripherals->id,
             ],
             [
                 'name' => 'Monitor 27" 4K',
                 'description' => 'Panel IPS, 144Hz, HDR',
                 'price' => 350.00,
                 'stock' => 10,
+                'category_id' => $catElectronics->id,
             ],
             [
                 'name' => 'Auriculares con Cancelación de Ruido',
                 'description' => 'Bluetooth 5.0, 40h de batería',
                 'price' => 120.00,
                 'stock' => 25,
+                'category_id' => $catElectronics->id,
             ],
         ];
 
