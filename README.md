@@ -111,6 +111,6 @@ Para ambiente de producción, *restringe los orígenes permitidos* editando `con
 
 ## Créditos
 
-Desarrollado por [TUS DATOS/EQUIPO].
+Desarrollado por Ali Astete Romero.
 
 ---
