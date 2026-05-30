@@ -3,175 +3,76 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Resources\ProductResource;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProductsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
-        try {
-            $products = Product::all();
-            return response()->json([
-                'success' => true,
-                'data' => $products,
-                'message' => 'Productos obtenidos correctamente'
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al obtener los productos',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        // Usamos with('category') para evitar el problema de N+1
+        // y devolvemos una colección a través del Resource
+        return ProductResource::collection(Product::with('category')->get());
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request): JsonResponse
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'category_id' => 'nullable|exists:categories,id',
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'price' => 'required|numeric|min:0',
-                'stock' => 'required|integer|min:0',
-            ], [
-                'name.required' => 'El nombre es obligatorio',
-                'price.required' => 'El precio es obligatorio',
-                'price.numeric' => 'El precio debe ser un número',
-                'stock.required' => 'El stock es obligatorio',
-                'stock.integer' => 'El stock debe ser un número entero',
-            ]);
+        $product = Product::create($request->validated());
+        
+        // Cargamos la relación para que el resource la incluya en la respuesta
+        $product->load('category');
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error de validación',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            $product = Product::create($request->all());
-
-            return response()->json([
-                'success' => true,
-                'data' => $product,
-                'message' => 'Producto creado exitosamente'
-            ], 201);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al crear el producto',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'data' => new ProductResource($product),
+            'message' => 'Producto creado exitosamente'
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Product $product): ProductResource
     {
-        try {
-            $product = Product::findOrFail($id);
-            return response()->json([
-                'success' => true,
-                'data' => $product,
-                'message' => 'Producto encontrado'
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Producto no encontrado'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al obtener el producto',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        // Laravel automáticamente inyecta el modelo si usamos Type Hinting (Route Model Binding)
+        $product->load('category');
+        return new ProductResource($product);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateProductRequest $request, Product $product): JsonResponse
     {
-        try {
-            $product = Product::findOrFail($id);
+        $product->update($request->validated());
+        $product->load('category');
 
-            $validator = Validator::make($request->all(), [
-                'category_id' => 'nullable|exists:categories,id',
-                'name' => 'sometimes|required|string|max:255',
-                'description' => 'nullable|string',
-                'price' => 'sometimes|required|numeric|min:0',
-                'stock' => 'sometimes|required|integer|min:0',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error de validación',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            $product->update($request->all());
-
-            return response()->json([
-                'success' => true,
-                'data' => $product,
-                'message' => 'Producto actualizado exitosamente'
-            ], 200);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Producto no encontrado'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al actualizar el producto',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'data' => new ProductResource($product),
+            'message' => 'Producto actualizado exitosamente'
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Product $product): JsonResponse
     {
-        try {
-            $product = Product::findOrFail($id);
-            $product->delete();
+        $product->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Producto eliminado exitosamente'
-            ], 200);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Producto no encontrado'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al eliminar el producto',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Producto eliminado exitosamente'
+        ], 200);
     }
 }
